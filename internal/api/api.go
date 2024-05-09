@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"time"
+
+	cache "github.com/hacdan/pokedex/internal/cache"
 )
 
 type Location struct {
@@ -18,9 +21,14 @@ type LocationResponse struct {
 	Results     []Location `json:"results"`
 }
 
+var MCache cache.Cache
+
 func GetLocations(url string) LocationResponse {
 	locationResponse := LocationResponse{} //TODO: Change this to better practice. "New" Keyboard is bad.
 
+	MCache = cache.NewCache(5 * time.Minute)
+
+	if cache.Get(url)
 	res, err := http.Get(url)
 	if err != nil {
 		panic(err)
