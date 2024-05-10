@@ -14,18 +14,6 @@ type Client struct {
 	client http.Client
 }
 
-type LocationResponse struct {
-	Count       int        `json:"count"`
-	NextUrl     string     `json:"next"`
-	PreviousUrl string     `json:"previous"`
-	Results     []Location `json:"results"`
-}
-
-type Location struct {
-	Name string `json:"name"`
-	Url  string `json:"url"`
-}
-
 func NewClient(timeout, cacheInterval time.Duration) Client {
 	return Client{
 		cache: cache.NewCache(cacheInterval),
@@ -63,4 +51,64 @@ func (c *Client) GetLocations(url string) LocationResponse {
 
 	c.cache.Add(url, body)
 	return locationResponse
+}
+
+func (c *Client) GetPokemonFromLocation(url string) LocationAreaDetailsResponse {
+	locationAreaDetailsResponse := LocationAreaDetailsResponse{}
+	val, exists := c.cache.Get(url)
+	if exists {
+		err := json.Unmarshal(val, &locationAreaDetailsResponse)
+		if err != nil {
+			panic(err)
+		}
+		return locationAreaDetailsResponse
+	}
+
+	res, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal(body, &locationAreaDetailsResponse)
+	if err != nil {
+		panic(err)
+	}
+
+	c.cache.Add(url, body)
+	return locationAreaDetailsResponse
+}
+
+func (c *Client) GetPokemon(url string) PokemonResponse {
+	pokemonResponse := PokemonResponse{}
+	val, exists := c.cache.Get(url)
+	if exists {
+		err := json.Unmarshal(val, &pokemonResponse)
+		if err != nil {
+			panic(err)
+		}
+		return pokemonResponse
+	}
+
+	res, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal(body, &pokemonResponse)
+	if err != nil {
+		panic(err)
+	}
+
+	c.cache.Add(url, body)
+	return pokemonResponse
 }

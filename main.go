@@ -13,7 +13,7 @@ import (
 type Command struct {
 	name        string
 	description string
-	callback    func(*Config, string) error
+	callback    func(*Config, []string) error
 }
 
 type Config struct {
@@ -46,8 +46,13 @@ func getCommands() map[string]Command {
 		},
 		"explore": {
 			name:        "explore",
-			description: "Goes back 20 locations on the map",
+			description: "Explores the area around you for Pokemon",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch",
+			description: "Attempst to catch the pokemon named in the second argument",
+			callback:    commandCatch,
 		},
 	}
 }
@@ -67,16 +72,28 @@ func main() {
 			fmt.Println(err)
 		}
 
-		input = strings.TrimSpace(input)
+		cmd, args := parseCommand(input)
 
-		command, exists := commands[input]
+		command, exists := commands[cmd]
 		if !exists {
-			fmt.Println("Command not found!")
-		}
-		err = command.callback(config, input)
+			fmt.Println("Bad command or filename")
+		} else {
+			err = command.callback(config, args)
 
-		if err != nil {
-			panic(err)
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
+}
+
+func parseCommand(s string) (string, []string) {
+	s = strings.TrimSpace(s)
+
+	splitString := strings.Split(s, " ")
+
+	if len(splitString) == 1 {
+		return splitString[0], []string{""}
+	}
+	return splitString[0], splitString[1:]
 }

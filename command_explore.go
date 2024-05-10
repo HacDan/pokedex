@@ -4,17 +4,12 @@ import (
 	"fmt"
 )
 
-func commandExplore(config *Config, args string) error {
-	// locations := config.pokeclient.GetLocations(config.nextUrl)
-	//
-	// config.nextUrl = locations.NextUrl
-	// config.previousUrl = locations.PreviousUrl
-	//
-	// for _, location := range locations.Results {
-	// 	fmt.Println(location.Name)
-	// }
-
-	fmt.Println(args)
-
+func commandExplore(config *Config, args []string) error {
+	url := "https://pokeapi.co/api/v2/location-area/" + args[0]
+	pokemonFromLocation := config.pokeclient.GetPokemonFromLocation(url)
+	fmt.Println("Exploring ", args[0], "...")
+	for _, pokemon := range pokemonFromLocation.PokemonEncounters {
+		fmt.Println(" - ", pokemon.Pokemon.Name)
+	}
 	return nil
 }
