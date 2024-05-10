@@ -13,7 +13,7 @@ import (
 type Command struct {
 	name        string
 	description string
-	callback    func(*Config) error
+	callback    func(*Config, string) error
 }
 
 type Config struct {
@@ -44,6 +44,11 @@ func getCommands() map[string]Command {
 			description: "Goes back 20 locations on the map",
 			callback:    commandMapb,
 		},
+		"explore": {
+			name:        "explore",
+			description: "Goes back 20 locations on the map",
+			callback:    commandExplore,
+		},
 	}
 }
 
@@ -52,7 +57,7 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 
 	config := new(Config) // allocate memory for an empty struct
-	config.nextUrl = "https://pokeapi.co/api/v2/location/"
+	config.nextUrl = "https://pokeapi.co/api/v2/location-area/"
 	config.pokeclient = api.NewClient(10*time.Second, 5*time.Minute)
 
 	for {
@@ -68,7 +73,7 @@ func main() {
 		if !exists {
 			fmt.Println("Command not found!")
 		}
-		err = command.callback(config)
+		err = command.callback(config, input)
 
 		if err != nil {
 			panic(err)

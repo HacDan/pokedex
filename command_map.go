@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func commandMap(config *Config) error {
+func commandMap(config *Config, args string) error {
 	locations := config.pokeclient.GetLocations(config.nextUrl)
 
 	config.nextUrl = locations.NextUrl

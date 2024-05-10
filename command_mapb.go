@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func commandMapb(config *Config) error {
+func commandMapb(config *Config, args string) error {
 	if config.previousUrl == "" {
 		fmt.Println("Error")
 		return nil

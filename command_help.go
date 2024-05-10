@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func commandHelp(config *Config) error {
+func commandHelp(config *Config, args string) error {
 	commands := getCommands() //TODO: Switch to constant of commands at runtime?
 
 	fmt.Println("Welcome to the Pokedex!")
