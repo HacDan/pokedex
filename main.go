@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	api "github.com/hacdan/pokedex/internal/api"
 )
 
 type Command struct {
@@ -16,6 +18,7 @@ type Command struct {
 type Config struct {
 	previousUrl string
 	nextUrl     string
+	pokeclient  api.Client
 }
 
 func main() {

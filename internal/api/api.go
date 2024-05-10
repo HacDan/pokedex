@@ -21,14 +21,25 @@ type LocationResponse struct {
 	Results     []Location `json:"results"`
 }
 
-var MCache cache.Cache
+type Client struct {
+	cache  cache.Cache
+	client http.Client
+}
 
-func GetLocations(url string) LocationResponse {
+func NewClient(timeout, cacheInterval time.Duration) Client {
+	return Client{
+		cache: cache.NewCache(cacheInterval),
+		client: http.Client{
+			Timeout: timeout,
+		},
+	}
+}
+
+func (c *Client) GetLocations(url string) LocationResponse {
 	locationResponse := LocationResponse{} //TODO: Change this to better practice. "New" Keyboard is bad.
 
 	MCache = cache.NewCache(5 * time.Minute)
 
-	if cache.Get(url)
 	res, err := http.Get(url)
 	if err != nil {
 		panic(err)
