@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-
-	api "github.com/hacdan/pokedex/internal/api"
 )
 
 func commandMapb(config *Config) error {
@@ -12,7 +10,8 @@ func commandMapb(config *Config) error {
 		return nil
 	}
 
-	locations := api.GetLocations(config.previousUrl)
+	locations := config.pokeclient.GetLocations(config.previousUrl)
+
 	config.nextUrl = locations.NextUrl
 	config.previousUrl = locations.PreviousUrl
 

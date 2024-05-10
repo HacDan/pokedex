@@ -9,9 +9,9 @@ import (
 	cache "github.com/hacdan/pokedex/internal/cache"
 )
 
-type Location struct {
-	Name string `json:"name"`
-	Url  string `json:"url"`
+type Client struct {
+	cache  cache.Cache
+	client http.Client
 }
 
 type LocationResponse struct {
@@ -21,9 +21,9 @@ type LocationResponse struct {
 	Results     []Location `json:"results"`
 }
 
-type Client struct {
-	cache  cache.Cache
-	client http.Client
+type Location struct {
+	Name string `json:"name"`
+	Url  string `json:"url"`
 }
 
 func NewClient(timeout, cacheInterval time.Duration) Client {
@@ -37,8 +37,14 @@ func NewClient(timeout, cacheInterval time.Duration) Client {
 
 func (c *Client) GetLocations(url string) LocationResponse {
 	locationResponse := LocationResponse{} //TODO: Change this to better practice. "New" Keyboard is bad.
-
-	MCache = cache.NewCache(5 * time.Minute)
+	val, exists := c.cache.Get(url)
+	if exists {
+		err := json.Unmarshal(val, &locationResponse)
+		if err != nil {
+			panic(err)
+		}
+		return locationResponse
+	}
 
 	res, err := http.Get(url)
 	if err != nil {
@@ -55,5 +61,6 @@ func (c *Client) GetLocations(url string) LocationResponse {
 		panic(err)
 	}
 
+	c.cache.Add(url, body)
 	return locationResponse
 }

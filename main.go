@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	api "github.com/hacdan/pokedex/internal/api"
 )
@@ -19,34 +20,6 @@ type Config struct {
 	previousUrl string
 	nextUrl     string
 	pokeclient  api.Client
-}
-
-func main() {
-	commands := getCommands()
-	reader := bufio.NewReader(os.Stdin)
-
-	config := new(Config) // allocate memory for an empty struct
-	config.nextUrl = "https://pokeapi.co/api/v2/location/"
-
-	for {
-		fmt.Print("Pokedex > ")
-		input, err := reader.ReadString('\n')
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		input = strings.TrimSpace(input)
-
-		command, exists := commands[input]
-		if !exists {
-			fmt.Println("Command not found!")
-		}
-		err = command.callback(config)
-
-		if err != nil {
-			panic(err)
-		}
-	}
 }
 
 func getCommands() map[string]Command {
@@ -71,5 +44,34 @@ func getCommands() map[string]Command {
 			description: "Goes back 20 locations on the map",
 			callback:    commandMapb,
 		},
+	}
+}
+
+func main() {
+	commands := getCommands()
+	reader := bufio.NewReader(os.Stdin)
+
+	config := new(Config) // allocate memory for an empty struct
+	config.nextUrl = "https://pokeapi.co/api/v2/location/"
+	config.pokeclient = api.NewClient(10*time.Second, 5*time.Minute)
+
+	for {
+		fmt.Print("Pokedex > ")
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		input = strings.TrimSpace(input)
+
+		command, exists := commands[input]
+		if !exists {
+			fmt.Println("Command not found!")
+		}
+		err = command.callback(config)
+
+		if err != nil {
+			panic(err)
+		}
 	}
 }
