@@ -20,6 +20,7 @@ type Config struct {
 	previousUrl string
 	nextUrl     string
 	pokeclient  api.Client
+	pokedex     map[string]api.PokemonResponse
 }
 
 func getCommands() map[string]Command {
@@ -64,6 +65,7 @@ func main() {
 	config := new(Config) // allocate memory for an empty struct
 	config.nextUrl = "https://pokeapi.co/api/v2/location-area/"
 	config.pokeclient = api.NewClient(10*time.Second, 5*time.Minute)
+	config.pokedex = make(map[string]api.PokemonResponse)
 
 	for {
 		fmt.Print("Pokedex > ")
